@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BICARA ZOO - Pengembaraan Prasekolah</title>
+    <!-- Muat turun Tailwind CSS untuk susun atur responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Muat turun Tone.js untuk kesan bunyi ceria tanpa fail luaran -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Fon mesra kanak-kanak: Fredoka & Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Gaya Umum & Tema Kartun 2D */
+        :root {
+            --sky-top: #7dd3fc;
+            --sky-bottom: #e0f2fe;
+            --grass-light: #86efac;
+            --grass-dark: #22c55e;
+            --wood-light: #fef08a;
+            --wood-border: #ca8a04;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background: linear-gradient(180deg, #38bdf8 0%, #bae6fd 55%, #86efac 55%, #4ade80 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .font-cartoon {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        /* Animasi Kartun */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulseBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.08); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        @keyframes cloudMove {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(110vw); }
+        }
+
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(-45deg); }
+            60% { transform: scale(1.3) rotate(15deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .animate-float {
+            animation: floatSlow 3s ease-in-out infinite;
+        }
+
+        .animate-pulse-bounce {
+            animation: pulseBounce 2s ease-in-out infinite;
+        }
+
+        .animate-pop {
+            animation: popIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .animate-wiggle {
+            animation: wiggle 2.5s ease-in-out infinite;
+        }
+
+        .star-earned {
+            animation: starPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Butang 3D Gaya Permainan Kanak-Kanak */
+        .btn-cartoon {
+            position: relative;
+            transition: all 0.12s ease;
+            border-bottom-width: 6px;
+            cursor: pointer;
+        }
+
+        .btn-cartoon:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+
+        /* Buih Pertuturan Cik Sara */
+        .speech-bubble {
+            position: relative;
+            background: #ffffff;
+            border-radius: 28px;
+            border: 4px solid #f59e0b;
+            box-shadow: 0 8px 0 rgba(245, 158, 11, 0.25);
+        }
+
+        @media (min-width: 768px) {
+            .speech-bubble::before {
+                content: '';
+                position: absolute;
+                left: -22px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 14px 22px 14px 0;
+                border-style: solid;
+                border-color: transparent #f59e0b transparent transparent;
+            }
+            .speech-bubble::after {
+                content: '';
+                position: absolute;
+                left: -16px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 11px 18px 11px 0;
+                border-style: solid;
+                border-color: transparent #ffffff transparent transparent;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .speech-bubble::before {
+                content: '';
+                position: absolute;
+                top: -22px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-width: 0 14px 22px 14px;
+                border-style: solid;
+                border-color: transparent transparent #f59e0b transparent;
+            }
+            .speech-bubble::after {
+                content: '';
+                position: absolute;
+                top: -16px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-width: 0 11px 18px 11px;
+                border-style: solid;
+                border-color: transparent transparent #ffffff transparent;
+            }
+        }
+
+        /* Latar Belakang Hutan */
+        .bg-forest-theme {
+            background: linear-gradient(180deg, #60a5fa 0%, #bae6fd 35%, #4ade80 35%, #16a34a 100%);
+        }
+
+        /* Latar Belakang Laut */
+        .bg-sea-theme {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 45%, #0369a1 85%, #fde047 95%);
+        }
+
+        /* Latar Belakang Gurun Panas */
+        .bg-desert-theme {
+            background: linear-gradient(180deg, #fdba74 0%, #fef08a 42%, #f59e0b 42%, #d97706 100%);
+        }
+
+        /* Latar Belakang Kutub Utara */
+        .bg-arctic-theme {
+            background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 45%, #ffffff 45%, #cbd5e1 100%);
+        }
+
+        /* Animasi Gelombang Suara Mikrofon */
+        @keyframes micPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.06); box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .mic-listening {
+            animation: micPulse 1.4s infinite;
+        }
+
+        @keyframes waveBar {
+            0%, 100% { height: 8px; }
+            50% { height: 28px; }
+        }
+
+        .voice-bar {
+            width: 6px;
+            background-color: #ef4444;
+            border-radius: 9999px;
+            animation: waveBar 0.7s ease-in-out infinite;
+        }
+
+        /* Konfeti untuk sambutan */
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body id="app-body" class="min-h-screen flex flex-col justify-between relative overflow-x-hidden">
+
+    <!-- Dekorasi Latar Belakang: Awan & Pokok Kartun -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <!-- Matahari Tersenyum -->
+        <div class="absolute top-4 right-4 md:top-8 md:right-12 w-20 h-20 md:w-28 md:h-28 animate-wiggle">
+            <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
+                <circle cx="50" cy="50" r="32" fill="#fde047" stroke="#f59e0b" stroke-width="4"/>
+                <!-- Sinaran matahari -->
+                <g stroke="#f59e0b" stroke-width="5" stroke-linecap="round">
+                    <line x1="50" y1="6" x2="50" y2="14"/>
+                    <line x1="50" y1="86" x2="50" y2="94"/>
+                    <line x1="6" y1="50" x2="14" y2="50"/>
+                    <line x1="86" y1="50" x2="94" y2="50"/>
+                    <line x1="19" y1="19" x2="25" y2="25"/>
+                    <line x1="75" y1="75" x2="81" y2="81"/>
+                    <line x1="81" y1="19" x2="75" y2="25"/>
+                    <line x1="25" y1="75" x2="19" y2="81"/>
+                </g>
+                <!-- Muka comel matahari -->
+                <circle cx="40" cy="46" r="3.5" fill="#78350f"/>
+                <circle cx="60" cy="46" r="3.5" fill="#78350f"/>
+                <path d="M 41 56 Q 50 64 59 56" fill="none" stroke="#78350f" stroke-width="3.5" stroke-linecap="round"/>
+                <circle cx="34" cy="52" r="3.5" fill="#fca5a5" opacity="0.7"/>
+                <circle cx="66" cy="52" r="3.5" fill="#fca5a5" opacity="0.7"/>
+            </svg>
+        </div>
+
+        <!-- Awan Bergerak -->
+        <div class="absolute top-10 left-0 opacity-90" style="animation: cloudMove 38s linear infinite;">
+            <svg width="130" height="60" viewBox="0 0 130 60">
+                <path d="M25,50 Q10,50 10,36 Q10,23 24,22 Q30,8 48,10 Q64,4 78,16 Q95,12 104,26 Q118,28 118,40 Q118,50 102,50 Z" fill="#ffffff"/>
+            </svg>
+        </div>
+        <div class="absolute top-24 left-1/3 opacity-80" style="animation: cloudMove 50s linear infinite;">
+            <svg width="100" height="48" viewBox="0 0 130 60">
+                <path d="M25,50 Q10,50 10,36 Q10,23 24,22 Q30,8 48,10 Q64,4 78,16 Q95,12 104,26 Q118,28 118,40 Q118,50 102,50 Z" fill="#ffffff"/>
+            </svg>
+        </div>
+
+        <!-- Pokok-pokok Hutan (Muncul lebih jelas semasa di Hutan) -->
+        <div id="forest-decor" class="hidden transition-opacity duration-500">
+            <!-- Pokok Kiri -->
+            <svg class="absolute bottom-0 -left-8 w-44 md:w-64 h-64 md:h-96 opacity-90" viewBox="0 0 200 300">
+                <rect x="75" y="160" width="45" height="140" rx="10" fill="#78350f"/>
+                <circle cx="95" cy="130" r="65" fill="#15803d"/>
+                <circle cx="55" cy="150" r="50" fill="#16a34a"/>
+                <circle cx="135" cy="150" r="50" fill="#16a34a"/>
+                <circle cx="95" cy="90" r="55" fill="#22c55e"/>
+            </svg>
+            <!-- Pokok Kanan -->
+            <svg class="absolute bottom-0 -right-8 w-44 md:w-64 h-64 md:h-96 opacity-90" viewBox="0 0 200 300">
+                <rect x="80" y="160" width="45" height="140" rx="10" fill="#78350f"/>
+                <circle cx="105" cy="130" r="65" fill="#15803d"/>
+                <circle cx="65" cy="150" r="50" fill="#16a34a"/>
+                <circle cx="145" cy="150" r="50" fill="#16a34a"/>
+                <circle cx="105" cy="90" r="55" fill="#22c55e"/>
+            </svg>
+            <!-- Semak Samun Bawah -->
+            <div class="absolute bottom-0 left-0 right-0 h-12 bg-emerald-700 rounded-t-3xl opacity-40"></div>
+        </div>
+    </div>
+
+    <!-- BAR ATAS: Tajuk Kecil, Bintang Ganjaran & Butang Bunyi -->
+    <header id="top-bar" class="relative z-20 w-full max-w-5xl mx-auto px-3 pt-3 md:pt-5 flex items-center justify-between">
+        <!-- Butang Rumah / Mula Semula -->
+        <button onclick="resetToHome()" id="home-btn" class="hidden btn-cartoon bg-amber-400 hover:bg-amber-300 border-amber-600 text-amber-950 font-cartoon font-bold px-3 py-2 md:px-4 md:py-2.5 rounded-2xl shadow-md flex items-center gap-1.5 text-sm md:text-base" title="Kembali ke Utama">
+            <svg class="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+            </svg>
+            <span class="hidden sm:inline">UTAMA</span>
+        </button>
+
+        <!-- Lencana Lokasi Semasa -->
+        <div id="location-badge" class="hidden bg-emerald-600 border-4 border-emerald-200 text-white font-cartoon px-3 sm:px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 text-xs sm:text-sm md:text-lg">
+            <span id="location-emoji">🌳</span>
+            <span id="location-text">HABITAT: HUTAN</span>
+        </div>
+
+        <!-- Papan Bintang Ganjaran -->
+        <div id="star-board" class="hidden bg-white/95 border-4 border-amber-400 px-3 py-1.5 md:px-4 md:py-2 rounded-full shadow-lg flex items-center gap-1.5 md:gap-2 ml-auto">
+            <div class="w-6 h-6 md:w-8 md:h-8 text-amber-400 drop-shadow-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <span id="star-count-text" class="font-cartoon font-bold text-amber-900 text-sm md:text-lg">0 / 39</span>
+        </div>
+
+        <!-- Butang Kawalan Bunyi -->
+        <button onclick="toggleSound()" id="sound-btn" class="btn-cartoon bg-sky-400 hover:bg-sky-300 border-sky-600 text-white p-2 md:p-2.5 rounded-2xl shadow-md ml-2" title="Tutup/Buka Bunyi">
+            <svg id="sound-on-icon" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+            </svg>
+            <svg id="sound-off-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- KAWASAN UTAMA PERMAINAN -->
+    <main class="relative z-10 flex-grow flex items-center justify-center w-full max-w-5xl mx-auto px-4 py-4">
+
+        <!-- =========================================================
+             SKRIN 1: SKRIN UTAMA (TAJUK BICARA ZOO, CIK SARA & MULA)
+             ========================================================= -->
+        <section id="screen-home" class="w-full flex flex-col items-center text-center animate-pop">
+            <!-- Papan Tanda Tajuk Kartun -->
+            <div class="bg-amber-300 border-8 border-amber-700 rounded-3xl px-6 py-4 md:px-12 md:py-6 shadow-2xl transform -rotate-1 mb-4 md:mb-6 relative">
+                <!-- Paku hiasan papan tanda -->
+                <div class="w-3.5 h-3.5 bg-amber-800 rounded-full absolute top-3 left-3"></div>
+                <div class="w-3.5 h-3.5 bg-amber-800 rounded-full absolute top-3 right-3"></div>
+                <div class="w-3.5 h-3.5 bg-amber-800 rounded-full absolute bottom-3 left-3"></div>
+                <div class="w-3.5 h-3.5 bg-amber-800 rounded-full absolute bottom-3 right-3"></div>
+
+                <span class="inline-block bg-emerald-600 text-white font-cartoon text-xs md:text-sm px-3 py-1 rounded-full tracking-wider mb-1 shadow">
+                    PERMAINAN PRASEKOLAH 4–5 TAHUN
+                </span>
+                <h1 class="font-cartoon text-5xl sm:text-6xl md:text-7xl font-bold text-amber-950 tracking-wide drop-shadow-sm">
+                    BICARA <span class="text-emerald-700">ZOO</span>
+                </h1>
+                <p class="text-amber-900 font-bold text-base md:text-xl mt-1">
+                    Jom Kenali Haiwan Bersama Cik Sara!
+                </p>
+            </div>
+
+            <!-- Watak Utama: Cik Sara (Penjaga Zoo Berpakaian Safari) -->
+            <div class="relative w-52 h-56 sm:w-64 sm:h-68 md:w-72 md:h-76 animate-float my-1">
+                <div id="cik-sara-home-container" class="w-full h-full"></div>
+            </div>
+
+            <!-- Butang MULA Besar & Mesra Sentuhan -->
+            <button onclick="startGame()" class="btn-cartoon animate-pulse-bounce bg-emerald-500 hover:bg-emerald-400 border-emerald-700 text-white font-cartoon text-3xl md:text-4xl font-bold px-12 py-4 md:px-16 md:py-5 rounded-full shadow-2xl mt-2 flex items-center gap-3">
+                <span>MULA</span>
+                <svg class="w-8 h-8 md:w-10 md:h-10" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+        </section>
+
+        <!-- =========================================================
+             SKRIN 2: SAMBUTAN CIK SARA
+             ========================================================= -->
+        <section id="screen-welcome" class="hidden w-full flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8 animate-pop">
+            <!-- Watak Cik Sara -->
+            <div class="w-48 h-52 sm:w-56 sm:h-60 md:w-64 md:h-72 flex-shrink-0 animate-float">
+                <div id="cik-sara-welcome-container" class="w-full h-full"></div>
+            </div>
+
+            <!-- Kotak Dialog Cik Sara -->
+            <div class="speech-bubble p-6 md:p-8 max-w-xl w-full text-center md:text-left">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <span class="inline-block bg-amber-100 text-amber-800 font-cartoon font-bold px-3 py-1 rounded-full text-sm">
+                        👩‍🌾 Cik Sara (Penjaga Zoo)
+                    </span>
+                    <button onclick="replayCurrentSpeech()" class="btn-cartoon bg-sky-400 hover:bg-sky-300 border-sky-600 text-white font-cartoon font-bold px-3 py-1 rounded-xl text-sm flex items-center gap-1.5" title="Dengar Semula Suara Cik Sara">
+                        <span>🔊</span>
+                        <span>DENGAR SEMULA</span>
+                    </button>
+                </div>
+                <h2 class="font-cartoon text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 leading-snug mb-3">
+                    Hai adik-adik! Selamat datang ke <span class="text-emerald-600">BICARA ZOO</span>!
+                </h2>
+                <p id="welcome-speech-text" class="text-gray-700 text-lg md:text-xl font-bold leading-relaxed mb-6">
+                    Nama cikgu ialah Cik Sara. Hari ini kita akan melawat empat habitat haiwan dan belajar mendengar serta bercakap. Adik-adik sudah bersedia?
+                </p>
+
+                <div class="flex justify-center md:justify-end">
+                    <button onclick="goToCurrentHabitat()" class="btn-cartoon bg-amber-400 hover:bg-amber-300 border-amber-600 text-amber-950 font-cartoon text-xl md:text-2xl font-bold px-8 py-3.5 rounded-2xl shadow-lg flex items-center gap-2">
+                        <span>JOM TEROKA!</span>
+                        <span class="text-2xl">➡️</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SKRIN 3: PENGENALAN HABITAT (DINAMIK UNTUK 4 HABITAT)
+             ========================================================= -->
+        <section id="screen-forest" class="hidden w-full flex flex-col items-center text-center animate-pop">
+            <div id="habitat-card" class="bg-white/95 border-8 border-emerald-600 rounded-3xl p-5 md:p-8 max-w-2xl w-full shadow-2xl">
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <span id="habitat-step-badge" class="inline-block bg-emerald-100 text-emerald-800 font-cartoon font-bold px-4 py-1.5 rounded-full text-sm md:text-base">
+                        🌿 HABITAT 1 DARIPADA 4
+                    </span>
+                    <button onclick="replayCurrentSpeech()" class="btn-cartoon bg-sky-400 hover:bg-sky-300 border-sky-600 text-white font-cartoon font-bold px-3.5 py-1.5 rounded-xl text-sm flex items-center gap-1.5">
+                        <span>🔊</span>
+                        <span>DENGAR</span>
+                    </button>
+                </div>
+                <h2 id="habitat-title" class="font-cartoon text-3xl sm:text-5xl font-bold text-emerald-700 mb-4">
+                    HABITAT HUTAN
+                </h2>
+
+                <!-- Ilustrasi Habitat Dinamik -->
+                <div id="habitat-illustration" class="w-full max-w-md mx-auto bg-gradient-to-b from-sky-200 to-emerald-200 rounded-2xl border-4 border-emerald-400 p-4 mb-5 relative overflow-hidden">
+                    <!-- Dimasukkan melalui JS -->
+                </div>
+
+                <!-- Mesej Cik Sara tentang Habitat -->
+                <div class="flex flex-col sm:flex-row items-center gap-4 bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mb-6 text-left">
+                    <div class="w-20 h-20 flex-shrink-0">
+                        <div id="cik-sara-mini-forest" class="w-full h-full"></div>
+                    </div>
+                    <p id="habitat-description" class="text-gray-800 font-bold text-base sm:text-lg leading-snug">
+                        <!-- Dimasukkan melalui JS -->
+                    </p>
+                </div>
+
+                <button onclick="goToCurrentAnimalIntro()" class="btn-cartoon bg-emerald-500 hover:bg-emerald-400 border-emerald-700 text-white font-cartoon text-xl md:text-2xl font-bold px-8 py-3.5 rounded-2xl shadow-lg inline-flex items-center gap-2">
+                    <span id="habitat-next-btn-text">LIHAT HAIWAN DI SINI</span>
+                    <span class="text-2xl">➡️</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SKRIN 4: PENGENALAN HAIWAN OLEH CIK SARA (13 HAIWAN)
+             ========================================================= -->
+        <section id="screen-bird-intro" class="hidden w-full flex flex-col items-center text-center animate-pop">
+            <div class="bg-white/95 border-8 border-sky-400 rounded-3xl p-5 md:p-8 max-w-3xl w-full shadow-2xl">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <span id="animal-progress-badge" class="inline-block bg-sky-100 text-sky-800 font-cartoon font-bold px-4 py-1 rounded-full text-sm md:text-base">
+                        HAIWAN 1 DARIPADA 13
+                    </span>
+                    <button onclick="replayCurrentSpeech()" class="btn-cartoon bg-sky-400 hover:bg-sky-300 border-sky-600 text-white font-cartoon font-bold px-3.5 py-1.5 rounded-xl text-sm flex items-center gap-1.5">
+                        <span>🔊</span>
+                        <span>ULANG SUARA</span>
+                    </button>
+                </div>
+                <h2 id="animal-intro-title" class="font-cartoon text-3xl sm:text-4xl md:text-5xl font-bold text-sky-600 mb-4">
+                    INI IALAH BURUNG!
+                </h2>
+
+                <!-- Paparan Gambar Haiwan Kartun Comel -->
+                <div class="w-56 h-48 sm:w-64 sm:h-52 mx-auto bg-gradient-to-b from-sky-100 to-emerald-100 rounded-3xl border-4 border-sky-300 p-3 mb-5 flex items-center justify-center shadow-inner">
+                    <div id="bird-illustration-intro" class="w-full h-full animate-float"></div>
+                </div>
+
+                <!-- Cik Sara Memperkenalkan Haiwan -->
+                <div class="flex flex-col sm:flex-row items-center gap-4 bg-amber-50 border-3 border-amber-300 rounded-2xl p-4 mb-6 text-center sm:text-left">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
+                        <div id="cik-sara-mini-bird" class="w-full h-full"></div>
+                    </div>
+                    <div>
+                        <p class="font-cartoon text-amber-800 font-bold text-sm mb-1">Cik Sara berkata:</p>
+                        <p id="animal-intro-speech" class="text-gray-800 font-bold text-base sm:text-lg md:text-xl leading-snug">
+                            <!-- Dimasukkan melalui JS -->
+                        </p>
+                    </div>
+                </div>
+
+                <button onclick="startQuiz()" class="btn-cartoon bg-amber-400 hover:bg-amber-300 border-amber-600 text-amber-950 font-cartoon text-xl md:text-2xl font-bold px-8 py-4 rounded-2xl shadow-lg inline-flex items-center gap-2">
+                    <span>MULA BERTUTUR & MENJAWAB</span>
+                    <span class="text-2xl">🎤</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SKRIN 5: KUIZ MENDENGAR & BERTUTUR (MIKROFON + AUDIO)
+             ========================================================= -->
+        <section id="screen-quiz" class="hidden w-full max-w-4xl mx-auto animate-pop">
+            <div class="bg-white/95 border-8 border-amber-400 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
+                <!-- Penunjuk Kemajuan Soalan & Haiwan -->
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <span id="question-counter" class="bg-purple-600 text-white font-cartoon font-bold px-4 py-1.5 rounded-full text-xs sm:text-sm md:text-base shadow">
+                        SOALAN 1 DARIPADA 3
+                    </span>
+                    <span id="question-type-badge" class="bg-sky-100 text-sky-800 font-cartoon font-bold px-3 py-1 rounded-full text-xs sm:text-sm">
+                        💬 Soalan Mudah
+                    </span>
+                    <span id="quiz-animal-label" class="text-emerald-700 font-cartoon font-bold text-xs sm:text-sm md:text-base">
+                        Haiwan 1/13: Burung
+                    </span>
+                </div>
+
+                <!-- Baris Atas: Gambar Haiwan + Soalan Audio Cik Sara -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center mb-5">
+                    <!-- Gambar Haiwan -->
+                    <div class="md:col-span-4 flex justify-center">
+                        <div class="w-36 h-32 sm:w-44 sm:h-40 bg-sky-100 border-4 border-sky-300 rounded-3xl p-2 flex items-center justify-center shadow-inner">
+                            <div id="bird-illustration-quiz" class="w-full h-full animate-float"></div>
+                        </div>
+                    </div>
+
+                    <!-- Soalan daripada Cik Sara + Butang Pembesar Suara -->
+                    <div class="md:col-span-8 flex flex-col sm:flex-row items-center gap-3 bg-amber-50 border-3 border-amber-300 rounded-2xl p-4">
+                        <div class="w-20 h-20 flex-shrink-0">
+                            <div id="cik-sara-mini-quiz" class="w-full h-full"></div>
+                        </div>
+                        <div class="text-center sm:text-left flex-grow">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-between gap-2 mb-1">
+                                <span class="text-xs font-cartoon font-bold uppercase tracking-wider text-amber-700">Cik Sara Bertanya:</span>
+                                <button onclick="replayCurrentSpeech()" class="btn-cartoon bg-sky-500 hover:bg-sky-400 border-sky-700 text-white font-cartoon font-bold px-3 py-1 rounded-xl text-xs sm:text-sm flex items-center gap-1">
+                                    <span>🔊</span>
+                                    <span>DENGAR SOALAN</span>
+                                </button>
+                            </div>
+                            <h3 id="question-text" class="font-cartoon text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 leading-snug">
+                                <!-- Teks soalan dimasukkan melalui JS -->
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KAWASAN BERTUTUR MELALUI MIKROFON -->
+                <div class="bg-sky-50 border-4 border-sky-300 rounded-3xl p-4 sm:p-5 text-center mb-4">
+                    <p class="font-cartoon text-sky-900 font-bold text-base sm:text-lg mb-3">
+                        Tekan butang <span class="text-rose-600">MULA BERCAKAP</span> dan sebut jawapan adik dengan kuat dan jelas!
+                    </p>
+
+                    <!-- Animasi Gelombang Suara Semasa Mendengar -->
+                    <div id="listening-indicator" class="hidden flex-col items-center justify-center mb-3 bg-rose-100 border-2 border-rose-300 rounded-2xl py-2.5 px-4">
+                        <div class="flex items-end justify-center gap-1.5 h-8 mb-1">
+                            <div class="voice-bar" style="animation-delay: 0.0s;"></div>
+                            <div class="voice-bar" style="animation-delay: 0.15s;"></div>
+                            <div class="voice-bar" style="animation-delay: 0.3s;"></div>
+                            <div class="voice-bar" style="animation-delay: 0.1s;"></div>
+                            <div class="voice-bar" style="animation-delay: 0.25s;"></div>
+                        </div>
+                        <span class="font-cartoon font-bold text-rose-600 text-sm sm:text-base">
+                            🎙️ Cik Sara sedang mendengar suara adik... Bercakap sekarang!
+                        </span>
+                    </div>
+
+                    <!-- Butang Kawalan Mikrofon Utama -->
+                    <div class="flex flex-wrap items-center justify-center gap-3 mb-4">
+                        <button id="btn-start-mic" onclick="startSpeechRecognition()" class="btn-cartoon bg-rose-500 hover:bg-rose-400 border-rose-700 text-white font-cartoon text-lg sm:text-2xl font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full shadow-xl flex items-center gap-2.5">
+                            <span class="text-2xl sm:text-3xl">🎤</span>
+                            <span>MULA BERCAKAP</span>
+                        </button>
+
+                        <button id="btn-stop-mic" onclick="stopSpeechRecognition()" class="hidden btn-cartoon bg-amber-500 hover:bg-amber-400 border-amber-700 text-white font-cartoon text-lg sm:text-xl font-bold px-6 py-3.5 rounded-full shadow-lg flex items-center gap-2">
+                            <span>⏹️</span>
+                            <span>BERHENTI</span>
+                        </button>
+
+                        <button id="btn-retry-mic" onclick="retrySpeechRecognition()" class="hidden btn-cartoon bg-sky-500 hover:bg-sky-400 border-sky-700 text-white font-cartoon text-lg sm:text-xl font-bold px-6 py-3.5 rounded-full shadow-lg flex items-center gap-2">
+                            <span>🔄</span>
+                            <span>CUBA LAGI</span>
+                        </button>
+                    </div>
+
+                    <!-- Paparan Teks Jawapan Kanak-Kanak (Hasil Pengecaman Suara) -->
+                    <div class="bg-white border-3 border-dashed border-sky-400 rounded-2xl p-3 sm:p-4 max-w-xl mx-auto">
+                        <span class="block text-xs font-cartoon font-bold uppercase text-gray-500 mb-1">
+                            Apa yang adik sebut:
+                        </span>
+                        <p id="spoken-transcript" class="font-cartoon text-xl sm:text-2xl font-bold text-gray-400 min-h-[2rem]">
+                            (Belum ada suara dikesan)
+                        </p>
+                    </div>
+
+                    <!-- Mod Bantuan Guru / Pelayar Tidak Sokong Mikrofon -->
+                    <div id="teacher-assist-box" class="hidden mt-4 bg-amber-100 border-3 border-amber-400 rounded-2xl p-4 text-center">
+                        <p id="mic-error-msg" class="font-bold text-amber-950 text-sm sm:text-base mb-3">
+                            Pelayar ini tidak menyokong mikrofon secara automatik. Cikgu atau ibu bapa boleh bantu klik butang di bawah selepas kanak-kanak menjawab secara lisan:
+                        </p>
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <button onclick="teacherConfirmSpoken(true)" class="btn-cartoon bg-emerald-500 hover:bg-emerald-400 border-emerald-700 text-white font-cartoon font-bold px-5 py-2.5 rounded-xl text-base">
+                                ✅ Adik Sudah Menjawab Dengan Baik
+                            </button>
+                            <button onclick="teacherConfirmSpoken(false)" class="btn-cartoon bg-amber-400 hover:bg-amber-300 border-amber-600 text-amber-950 font-cartoon font-bold px-5 py-2.5 rounded-xl text-base">
+                                🤗 Galakkan Adik Cuba Lagi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kotak Maklum Balas & Pujian Cik Sara (Muncul selepas menjawab) -->
+                <div id="feedback-box" class="hidden mt-4 rounded-2xl p-4 md:p-5 text-center border-4 transition-all">
+                    <div id="feedback-emoji" class="text-4xl md:text-5xl mb-1">🎉</div>
+                    <h4 id="feedback-title" class="font-cartoon text-2xl md:text-3xl font-bold mb-1"></h4>
+                    <p id="feedback-message" class="font-bold text-base md:text-lg mb-4"></p>
+
+                    <!-- Butang Seterusnya -->
+                    <button id="next-question-btn" onclick="handleNextStep()" class="hidden btn-cartoon bg-emerald-500 hover:bg-emerald-400 border-emerald-700 text-white font-cartoon text-xl md:text-2xl font-bold px-8 py-3 rounded-2xl shadow-lg inline-flex items-center gap-2">
+                        <span id="next-btn-label">SOALAN SETERUSNYA</span>
+                        <span>➡️</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SKRIN 6: TAMAT & SAMBUTAN BINTANG GANJARAN
+             ========================================================= -->
+        <section id="screen-celebration" class="hidden w-full max-w-2xl mx-auto text-center animate-pop">
+            <div class="bg-white/95 border-8 border-amber-400 rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
+                <div class="inline-block bg-amber-100 text-amber-800 font-cartoon font-bold px-4 py-1 rounded-full text-base mb-2">
+                    🏆 TAHNIAH ADIK PINTAR!
+                </div>
+                <h2 class="font-cartoon text-4xl sm:text-5xl font-bold text-emerald-600 mb-3">
+                    TAMAT PENGEMBARAAN!
+                </h2>
+
+                <!-- 3 Bintang Ganjaran Besar -->
+                <div class="flex justify-center items-center gap-3 sm:gap-5 my-4">
+                    <div class="w-14 h-14 sm:w-20 sm:h-20 text-amber-400 drop-shadow-lg star-earned">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <div class="w-20 h-20 sm:w-28 sm:h-28 text-amber-400 drop-shadow-lg star-earned" style="animation-delay: 0.15s;">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <div class="w-14 h-14 sm:w-20 sm:h-20 text-amber-400 drop-shadow-lg star-earned" style="animation-delay: 0.3s;">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                </div>
+
+                <!-- Cik Sara Meraikan -->
+                <div class="flex items-center justify-center gap-4 mb-4">
+                    <div class="w-28 h-32 sm:w-36 sm:h-40 animate-float">
+                        <div id="cik-sara-celebrate" class="w-full h-full"></div>
+                    </div>
+                </div>
+
+                <p id="celebration-summary-text" class="text-gray-800 font-bold text-lg sm:text-xl mb-6 leading-relaxed">
+                    Cik Sara sangat bangga! Adik telah melawat semua 4 habitat, mengenali 13 haiwan comel, dan berani bertutur dengan baik!
+                </p>
+
+                <button onclick="resetToHome()" class="btn-cartoon bg-sky-500 hover:bg-sky-400 border-sky-700 text-white font-cartoon text-xl md:text-2xl font-bold px-8 py-4 rounded-full shadow-lg inline-flex items-center gap-2">
+                    <span>MAIN SEMULA</span>
+                    <span>🔄</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- KAKI HALAMAN RINGKAS -->
+    <footer class="relative z-10 text-center py-2 text-xs md:text-sm font-bold text-emerald-950/70">
+        BICARA ZOO • Pendidikan Awal Kanak-Kanak (4–5 Tahun)
+    </footer>
+
+    <script>
+        /* =========================================================
+           ASET GRAFIK SVG KARTUN 2D (CIK SARA & BURUNG COMEL)
+           ========================================================= */
+
+        // SVG Watak Utama: Cik Sara (Penjaga Zoo Perempuan Berpakaian Safari)
+        const CIK_SARA_SVG = `
+        <svg viewBox="0 0 220 250" class="w-full h-full drop-shadow-lg">
+            <!-- Rambut Belakang -->
+            <path d="M 55 95 Q 45 155 62 175 L 158 175 Q 175 155 165 95 Z" fill="#451a03"/>
+            <!-- Tocang Rambut Kiri & Kanan -->
+            <circle cx="48" cy="120" r="18" fill="#451a03"/>
+            <circle cx="172" cy="120" r="18" fill="#451a03"/>
+            <circle cx="54" cy="112" r="5" fill="#f59e0b"/>
+            <circle cx="166" cy="112" r="5" fill="#f59e0b"/>
+
+            <!-- Badan & Baju Safari Khaki -->
+            <path d="M 68 158 L 152 158 L 164 235 L 56 235 Z" rx="15" fill="#d6b88d" stroke="#92400e" stroke-width="3"/>
+            <!-- Kolar Baju Safari -->
+            <polygon points="88,158 110,182 95,190 78,165" fill="#fef3c7" stroke="#92400e" stroke-width="2"/>
+            <polygon points="132,158 110,182 125,190 142,165" fill="#fef3c7" stroke="#92400e" stroke-width="2"/>
+            <!-- Skaf Leher Hijau Zoo -->
+            <path d="M 92 162 Q 110 176 128 162 L 118 188 L 110 178 L 102 188 Z" fill="#16a34a"/>
+            <!-- Poket Baju Safari -->
+            <rect x="74" y="192" width="24" height="22" rx="4" fill="#c2a070" stroke="#92400e" stroke-width="2"/>
+            <rect x="122" y="192" width="24" height="22" rx="4" fill="#c2a070" stroke="#92400e" stroke-width="2"/>
+            <!-- Lencana Zoo di Baju -->
+            <circle cx="134" cy="180" r="8" fill="#facc15" stroke="#b45309" stroke-width="2"/>
+            <text x="134" y="183" font-size="8" text-anchor="middle" fill="#78350f" font-weight="bold">ZOO</text>
+
+            <!-- Tangan Melambai Mesra -->
+            <path d="M 65 166 Q 35 155 32 130" fill="none" stroke="#d6b88d" stroke-width="16" stroke-linecap="round"/>
+            <circle cx="32" cy="126" r="10" fill="#fed7aa"/>
+            <path d="M 155 166 Q 178 190 172 215" fill="none" stroke="#d6b88d" stroke-width="16" stroke-linecap="round"/>
+            <circle cx="172" cy="218" r="10" fill="#fed7aa"/>
+
+            <!-- Leher -->
+            <rect x="98" y="140" width="24" height="22" rx="8" fill="#fed7aa"/>
+
+            <!-- Kepala / Muka Comel Cik Sara -->
+            <rect x="65" y="65" width="90" height="84" rx="42" fill="#fed7aa" stroke="#ea580c" stroke-width="2"/>
+
+            <!-- Rambut Depan (Bangs) -->
+            <path d="M 64 95 Q 85 72 110 85 Q 135 72 156 95 Q 152 62 110 62 Q 68 62 64 95 Z" fill="#451a03"/>
+
+            <!-- Mata Besar & Ceria -->
+            <circle cx="90" cy="106" r="7.5" fill="#1e293b"/>
+            <circle cx="92.5" cy="103.5" r="2.5" fill="#ffffff"/>
+            <circle cx="130" cy="106" r="7.5" fill="#1e293b"/>
+            <circle cx="132.5" cy="103.5" r="2.5" fill="#ffffff"/>
+
+            <!-- Kening -->
+            <path d="M 81 94 Q 90 90 98 94" fill="none" stroke="#451a03" stroke-width="3" stroke-linecap="round"/>
+            <path d="M 122 94 Q 130 90 139 94" fill="none" stroke="#451a03" stroke-width="3" stroke-linecap="round"/>
+
+            <!-- Pipi Merah Jambu -->
+            <ellipse cx="78" cy="118" rx="7" ry="4.5" fill="#fda4af" opacity="0.8"/>
+            <ellipse cx="142" cy="118" rx="7" ry="4.5" fill="#fda4af" opacity="0.8"/>
+
+            <!-- Senyuman Manis -->
+            <path d="M 96 123 Q 110 137 124 123" fill="#f43f5e" stroke="#9f1239" stroke-width="2.5" stroke-linecap="round"/>
+
+            <!-- Topi Safari Penjaga Zoo -->
+            <ellipse cx="110" cy="66" rx="68" ry="14" fill="#eab308" stroke="#854d0e" stroke-width="3"/>
+            <path d="M 64 66 Q 64 26 110 26 Q 156 26 156 66 Z" fill="#facc15" stroke="#854d0e" stroke-width="3"/>
+            <!-- Reben Topi Hijau -->
+            <rect x="65" y="56" width="90" height="9" rx="3" fill="#16a34a"/>
+            <!-- Lambang Tapak Haiwan pada Topi -->
+            <circle cx="110" cy="43" r="8" fill="#ffffff"/>
+            <circle cx="110" cy="45" r="3.5" fill="#16a34a"/>
+            <circle cx="106" cy="40" r="1.5" fill="#16a34a"/>
+            <circle cx="110" cy="39" r="1.5" fill="#16a34a"/>
+            <circle cx="114" cy="40" r="1.5" fill="#16a34a"/>
+        </svg>`;
+
+        // SVG Burung Kartun Comel di Atas Dahan Pokok
+        const BIRD_SVG = `
+        <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+            <!-- Dahan Pokok -->
+            <path d="M 15 155 Q 110 142 205 152" fill="none" stroke="#78350f" stroke-width="14" stroke-linecap="round"/>
+            <!-- Daun Comel pada Dahan -->
+            <ellipse cx="35" cy="140" rx="14" ry="7" fill="#22c55e" transform="rotate(-25 35 140)"/>
+            <ellipse cx="185" cy="138" rx="15" ry="7" fill="#16a34a" transform="rotate(20 185 138)"/>
+
+            <!-- Ekor Burung -->
+            <polygon points="55,105 20,90 28,112 18,125 58,120" fill="#0284c7"/>
+
+            <!-- Kaki Burung Mencengkam Dahan -->
+            <path d="M 95 135 L 95 148 M 89 148 L 101 148" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+            <path d="M 122 135 L 122 148 M 116 148 L 128 148" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+
+            <!-- Badan Burung Bulat Gebu -->
+            <ellipse cx="108" cy="100" rx="52" ry="44" fill="#38bdf8" stroke="#0369a1" stroke-width="3"/>
+            <!-- Perut Kuning Cerah -->
+            <path d="M 82 115 Q 115 142 148 112 Q 145 88 115 92 Q 85 95 82 115 Z" fill="#fef08a"/>
+
+            <!-- Jambul Comel di Kepala -->
+            <path d="M 110 56 Q 105 36 118 42 Q 124 32 128 48 Q 136 42 132 58" fill="#0284c7"/>
+
+            <!-- Kepak Burung -->
+            <path d="M 68 95 Q 52 118 88 124 Q 112 122 104 96 Q 88 85 68 95 Z" fill="#0ea5e9" stroke="#0369a1" stroke-width="2.5"/>
+
+            <!-- Mata Besar Bersinar -->
+            <circle cx="132" cy="82" r="9" fill="#ffffff" stroke="#0369a1" stroke-width="2"/>
+            <circle cx="134" cy="82" r="5" fill="#0f172a"/>
+            <circle cx="136" cy="80" r="2" fill="#ffffff"/>
+
+            <!-- Pipi Merah Jambu -->
+            <ellipse cx="124" cy="95" rx="6" ry="3.5" fill="#fda4af"/>
+
+            <!-- Paruh Kuning Oren -->
+            <polygon points="154,84 180,91 154,98" fill="#f97316" stroke="#c2410c" stroke-width="2" stroke-linejoin="round"/>
+            <line x1="155" y1="91" x2="176" y2="91" stroke="#9a3412" stroke-width="2"/>
+
+            <!-- Nota Muzik Kecil (Burung Berkicau) -->
+            <text x="172" y="55" font-size="22" fill="#f59e0b">♪</text>
+            <text x="188" y="42" font-size="18" fill="#ec4899">♫</text>
+        </svg>`;
+
+        // Koleksi Ilustrasi Kartun 2D untuk Semua 13 Haiwan
+        const ANIMAL_SVGS = {
+            burung: BIRD_SVG,
+            monyet: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Ekor Monyet Melingkar -->
+                <path d="M 58 135 Q 20 125 25 90 Q 30 68 48 78" fill="none" stroke="#92400e" stroke-width="10" stroke-linecap="round"/>
+                <!-- Badan Monyet -->
+                <ellipse cx="110" cy="135" rx="42" ry="38" fill="#92400e" stroke="#451a03" stroke-width="3"/>
+                <ellipse cx="110" cy="138" rx="26" ry="26" fill="#fde68a"/>
+                <!-- Tangan -->
+                <path d="M 72 120 Q 45 135 55 155" fill="none" stroke="#92400e" stroke-width="14" stroke-linecap="round"/>
+                <path d="M 148 120 Q 175 135 165 155" fill="none" stroke="#92400e" stroke-width="14" stroke-linecap="round"/>
+                <!-- Telinga -->
+                <circle cx="62" cy="72" r="18" fill="#92400e" stroke="#451a03" stroke-width="3"/>
+                <circle cx="62" cy="72" r="10" fill="#fde68a"/>
+                <circle cx="158" cy="72" r="18" fill="#92400e" stroke="#451a03" stroke-width="3"/>
+                <circle cx="158" cy="72" r="10" fill="#fde68a"/>
+                <!-- Kepala -->
+                <circle cx="110" cy="75" r="42" fill="#92400e" stroke="#451a03" stroke-width="3"/>
+                <!-- Muka Cerah -->
+                <ellipse cx="110" cy="84" rx="30" ry="24" fill="#fde68a"/>
+                <circle cx="96" cy="72" r="6" fill="#1e293b"/>
+                <circle cx="98" cy="70" r="2" fill="#ffffff"/>
+                <circle cx="124" cy="72" r="6" fill="#1e293b"/>
+                <circle cx="126" cy="70" r="2" fill="#ffffff"/>
+                <path d="M 96 92 Q 110 105 124 92" fill="none" stroke="#78350f" stroke-width="3.5" stroke-linecap="round"/>
+                <!-- Pisang Comel -->
+                <path d="M 155 148 Q 185 142 188 118 Q 172 135 155 148 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+            </svg>`,
+            gajah: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Telinga Besar -->
+                <ellipse cx="55" cy="90" rx="34" ry="42" fill="#94a3b8" stroke="#475569" stroke-width="3"/>
+                <ellipse cx="58" cy="90" rx="22" ry="30" fill="#fbcfe8"/>
+                <ellipse cx="165" cy="90" rx="34" ry="42" fill="#94a3b8" stroke="#475569" stroke-width="3"/>
+                <ellipse cx="162" cy="90" rx="22" ry="30" fill="#fbcfe8"/>
+                <!-- Badan & Kaki -->
+                <rect x="68" y="110" width="84" height="62" rx="25" fill="#94a3b8" stroke="#475569" stroke-width="3"/>
+                <rect x="74" y="148" width="24" height="28" rx="8" fill="#64748b"/>
+                <rect x="122" y="148" width="24" height="28" rx="8" fill="#64748b"/>
+                <!-- Kepala -->
+                <circle cx="110" cy="86" r="46" fill="#94a3b8" stroke="#475569" stroke-width="3"/>
+                <!-- Mata -->
+                <circle cx="92" cy="76" r="6" fill="#0f172a"/>
+                <circle cx="94" cy="74" r="2" fill="#ffffff"/>
+                <circle cx="128" cy="76" r="6" fill="#0f172a"/>
+                <circle cx="130" cy="74" r="2" fill="#ffffff"/>
+                <!-- Gading Kecil -->
+                <path d="M 88 102 Q 78 112 85 118" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+                <path d="M 132 102 Q 142 112 135 118" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+                <!-- Belalai Panjang -->
+                <path d="M 110 92 Q 110 138 136 135 Q 148 132 144 120" fill="none" stroke="#94a3b8" stroke-width="18" stroke-linecap="round"/>
+                <path d="M 110 92 Q 110 138 136 135 Q 148 132 144 120" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+            </svg>`,
+            harimau: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Ekor Berbelang -->
+                <path d="M 155 145 Q 195 135 190 100" fill="none" stroke="#f97316" stroke-width="11" stroke-linecap="round"/>
+                <!-- Badan -->
+                <ellipse cx="110" cy="136" rx="46" ry="36" fill="#f97316" stroke="#9a3412" stroke-width="3"/>
+                <ellipse cx="110" cy="140" rx="26" ry="24" fill="#fef3c7"/>
+                <!-- Telinga -->
+                <circle cx="72" cy="54" r="15" fill="#f97316" stroke="#9a3412" stroke-width="3"/>
+                <circle cx="148" cy="54" r="15" fill="#f97316" stroke="#9a3412" stroke-width="3"/>
+                <!-- Kepala -->
+                <circle cx="110" cy="84" r="44" fill="#f97316" stroke="#9a3412" stroke-width="3"/>
+                <!-- Belang Hitam Harimau -->
+                <path d="M 102 42 L 110 56 L 118 42" fill="#1e293b"/>
+                <path d="M 68 80 L 82 84 L 68 90" fill="#1e293b"/>
+                <path d="M 152 80 L 138 84 L 152 90" fill="#1e293b"/>
+                <!-- Muncung Putih -->
+                <ellipse cx="110" cy="98" rx="22" ry="16" fill="#ffffff"/>
+                <polygon points="104,90 116,90 110,97" fill="#ec4899"/>
+                <path d="M 98 103 Q 110 112 122 103" fill="none" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                <!-- Mata -->
+                <circle cx="92" cy="76" r="6" fill="#1e293b"/>
+                <circle cx="94" cy="74" r="2" fill="#ffffff"/>
+                <circle cx="128" cy="76" r="6" fill="#1e293b"/>
+                <circle cx="130" cy="74" r="2" fill="#ffffff"/>
+            </svg>`,
+            sotong: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Sesungut Sotong (8 Tentakel Comel) -->
+                <path d="M 75 115 Q 45 140 55 168" fill="none" stroke="#a855f7" stroke-width="11" stroke-linecap="round"/>
+                <path d="M 92 120 Q 75 150 85 174" fill="none" stroke="#9333ea" stroke-width="11" stroke-linecap="round"/>
+                <path d="M 110 122 Q 110 155 110 176" fill="none" stroke="#a855f7" stroke-width="11" stroke-linecap="round"/>
+                <path d="M 128 120 Q 145 150 135 174" fill="none" stroke="#9333ea" stroke-width="11" stroke-linecap="round"/>
+                <path d="M 145 115 Q 175 140 165 168" fill="none" stroke="#a855f7" stroke-width="11" stroke-linecap="round"/>
+                <!-- Kepala Sotong Bulat Besar -->
+                <path d="M 62 95 Q 62 28 110 28 Q 158 28 158 95 Q 158 122 110 122 Q 62 122 62 95 Z" fill="#c084fc" stroke="#6b21a8" stroke-width="3"/>
+                <!-- Bintik Comel di Kepala -->
+                <circle cx="85" cy="52" r="6" fill="#e9d5ff"/>
+                <circle cx="135" cy="52" r="6" fill="#e9d5ff"/>
+                <circle cx="110" cy="42" r="5" fill="#e9d5ff"/>
+                <!-- Mata Besar -->
+                <circle cx="92" cy="86" r="9" fill="#ffffff"/>
+                <circle cx="94" cy="86" r="5" fill="#1e293b"/>
+                <circle cx="128" cy="86" r="9" fill="#ffffff"/>
+                <circle cx="126" cy="86" r="5" fill="#1e293b"/>
+                <!-- Mulut Tersenyum -->
+                <path d="M 102 102 Q 110 110 118 102" fill="none" stroke="#581c87" stroke-width="3" stroke-linecap="round"/>
+            </svg>`,
+            ikan: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Buih Air -->
+                <circle cx="185" cy="55" r="6" fill="#bae6fd" stroke="#0284c7" stroke-width="2"/>
+                <circle cx="196" cy="38" r="4" fill="#bae6fd" stroke="#0284c7" stroke-width="2"/>
+                <!-- Ekor Ikan -->
+                <polygon points="62,95 22,58 32,95 22,132" fill="#f97316" stroke="#c2410c" stroke-width="3" stroke-linejoin="round"/>
+                <!-- Sirip Atas & Bawah -->
+                <path d="M 95 54 Q 115 26 135 56 Z" fill="#fb923c" stroke="#c2410c" stroke-width="2.5"/>
+                <path d="M 100 135 Q 115 158 130 135 Z" fill="#fb923c" stroke="#c2410c" stroke-width="2.5"/>
+                <!-- Badan Ikan -->
+                <ellipse cx="118" cy="95" rx="60" ry="42" fill="#facc15" stroke="#ca8a04" stroke-width="3"/>
+                <!-- Jalur Oren -->
+                <path d="M 105 54 Q 98 95 105 136" fill="none" stroke="#f97316" stroke-width="10"/>
+                <path d="M 130 56 Q 124 95 130 134" fill="none" stroke="#f97316" stroke-width="10"/>
+                <!-- Sirip Sisi -->
+                <ellipse cx="115" cy="104" rx="14" ry="9" fill="#fb923c" transform="rotate(-20 115 104)"/>
+                <!-- Mata & Senyuman -->
+                <circle cx="154" cy="84" r="8" fill="#ffffff" stroke="#854d0e" stroke-width="2"/>
+                <circle cx="156" cy="84" r="4.5" fill="#0f172a"/>
+                <path d="M 162 102 Q 172 108 176 98" fill="none" stroke="#9a3412" stroke-width="3" stroke-linecap="round"/>
+            </svg>`,
+            ketam: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Kaki-kaki Ketam -->
+                <path d="M 65 115 L 35 135 L 28 155" fill="none" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+                <path d="M 68 128 L 42 150 L 38 168" fill="none" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+                <path d="M 155 115 L 185 135 L 192 155" fill="none" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+                <path d="M 152 128 L 178 150 L 182 168" fill="none" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+                <!-- Penyepit Besar Kiri & Kanan -->
+                <path d="M 68 95 Q 40 75 45 55" fill="none" stroke="#ef4444" stroke-width="9" stroke-linecap="round"/>
+                <path d="M 45 62 C 25 55 25 30 48 34 L 44 48 L 58 42 C 66 55 55 66 45 62 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2.5"/>
+                <path d="M 152 95 Q 180 75 175 55" fill="none" stroke="#ef4444" stroke-width="9" stroke-linecap="round"/>
+                <path d="M 175 62 C 195 55 195 30 172 34 L 176 48 L 162 42 C 154 55 165 66 175 62 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2.5"/>
+                <!-- Tangkai Mata -->
+                <line x1="92" y1="84" x2="92" y2="62" stroke="#dc2626" stroke-width="6"/>
+                <line x1="128" y1="84" x2="128" y2="62" stroke="#dc2626" stroke-width="6"/>
+                <circle cx="92" cy="58" r="9" fill="#ffffff" stroke="#991b1b" stroke-width="2.5"/>
+                <circle cx="92" cy="58" r="4.5" fill="#0f172a"/>
+                <circle cx="128" cy="58" r="9" fill="#ffffff" stroke="#991b1b" stroke-width="2.5"/>
+                <circle cx="128" cy="58" r="4.5" fill="#0f172a"/>
+                <!-- Cengkerang Badan Ketam -->
+                <ellipse cx="110" cy="112" rx="54" ry="36" fill="#ef4444" stroke="#991b1b" stroke-width="3"/>
+                <path d="M 92 118 Q 110 132 128 118" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>`,
+            tapak_sulaiman: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Bentuk Bintang 5 Lengan Gebu -->
+                <polygon points="110,18 134,68 188,75 148,113 158,167 110,141 62,167 72,113 32,75 86,68"
+                         fill="#fb7185" stroke="#be123c" stroke-width="5" stroke-linejoin="round"/>
+                <!-- Bintik-bintik Tekstur Comel -->
+                <circle cx="110" cy="42" r="4" fill="#ffe4e6"/>
+                <circle cx="158" cy="82" r="4" fill="#ffe4e6"/>
+                <circle cx="62" cy="82" r="4" fill="#ffe4e6"/>
+                <circle cx="142" cy="142" r="4" fill="#ffe4e6"/>
+                <circle cx="78" cy="142" r="4" fill="#ffe4e6"/>
+                <!-- Muka Comel di Tengah -->
+                <circle cx="96" cy="94" r="7" fill="#1e293b"/>
+                <circle cx="98" cy="92" r="2.5" fill="#ffffff"/>
+                <circle cx="124" cy="94" r="7" fill="#1e293b"/>
+                <circle cx="126" cy="92" r="2.5" fill="#ffffff"/>
+                <ellipse cx="86" cy="104" rx="5" ry="3" fill="#fda4af"/>
+                <ellipse cx="134" cy="104" rx="5" ry="3" fill="#fda4af"/>
+                <path d="M 98 110 Q 110 122 122 110" fill="none" stroke="#881337" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>`,
+            unta: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Kaki Panjang Unta -->
+                <line x1="72" y1="128" x2="72" y2="174" stroke="#d97706" stroke-width="10" stroke-linecap="round"/>
+                <line x1="94" y1="128" x2="94" y2="174" stroke="#b45309" stroke-width="10" stroke-linecap="round"/>
+                <line x1="126" y1="128" x2="126" y2="174" stroke="#d97706" stroke-width="10" stroke-linecap="round"/>
+                <line x1="146" y1="128" x2="146" y2="174" stroke="#b45309" stroke-width="10" stroke-linecap="round"/>
+                <!-- Bonggol Unta di Belakang -->
+                <path d="M 65 98 Q 88 45 112 98 Z" fill="#f59e0b" stroke="#92400e" stroke-width="3"/>
+                <path d="M 102 98 Q 124 48 145 98 Z" fill="#f59e0b" stroke="#92400e" stroke-width="3"/>
+                <!-- Badan Unta -->
+                <ellipse cx="108" cy="112" rx="48" ry="26" fill="#fbbf24" stroke="#92400e" stroke-width="3"/>
+                <!-- Leher & Kepala Unta -->
+                <path d="M 145 110 Q 168 105 168 62" fill="none" stroke="#fbbf24" stroke-width="18" stroke-linecap="round"/>
+                <ellipse cx="174" cy="56" rx="22" ry="15" fill="#fbbf24" stroke="#92400e" stroke-width="3"/>
+                <circle cx="158" cy="44" r="6" fill="#d97706"/>
+                <circle cx="176" cy="52" r="4" fill="#1e293b"/>
+                <path d="M 176 62 Q 186 66 192 60" fill="none" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>`,
+            ular: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Badan Ular Berlingkar -->
+                <path d="M 45 152 Q 110 165 175 150 Q 185 135 155 130 Q 95 125 60 120 Q 42 110 72 100 Q 125 92 145 72"
+                      fill="none" stroke="#22c55e" stroke-width="22" stroke-linecap="round"/>
+                <path d="M 45 152 Q 110 165 175 150 Q 185 135 155 130 Q 95 125 60 120 Q 42 110 72 100 Q 125 92 145 72"
+                      fill="none" stroke="#15803d" stroke-width="3" stroke-linecap="round"/>
+                <!-- Kepala Ular Comel -->
+                <ellipse cx="152" cy="62" rx="26" ry="20" fill="#4ade80" stroke="#15803d" stroke-width="3"/>
+                <!-- Lidah Bercabang -->
+                <path d="M 176 66 L 194 64 M 194 64 L 202 58 M 194 64 L 202 70" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                <!-- Mata Besar -->
+                <circle cx="148" cy="54" r="6" fill="#ffffff"/>
+                <circle cx="150" cy="54" r="3.5" fill="#0f172a"/>
+                <circle cx="164" cy="54" r="6" fill="#ffffff"/>
+                <circle cx="166" cy="54" r="3.5" fill="#0f172a"/>
+            </svg>`,
+            kalajengking: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Ekor Melengkung ke Atas dengan Sengat -->
+                <path d="M 65 115 Q 25 95 45 52 Q 62 24 96 34" fill="none" stroke="#d97706" stroke-width="14" stroke-linecap="round"/>
+                <polygon points="94,26 114,36 92,42" fill="#991b1b"/>
+                <!-- Kaki-kaki -->
+                <path d="M 85 128 L 70 156 M 105 130 L 95 158 M 125 128 L 120 156" stroke="#92400e" stroke-width="5" stroke-linecap="round"/>
+                <!-- Badan Bersegmen -->
+                <ellipse cx="105" cy="116" rx="44" ry="22" fill="#f59e0b" stroke="#92400e" stroke-width="3"/>
+                <!-- Penyepit Depan -->
+                <path d="M 145 108 Q 172 92 184 102" fill="none" stroke="#d97706" stroke-width="8" stroke-linecap="round"/>
+                <circle cx="186" cy="100" r="10" fill="#f59e0b" stroke="#92400e" stroke-width="2.5"/>
+                <path d="M 145 122 Q 172 136 184 126" fill="none" stroke="#d97706" stroke-width="8" stroke-linecap="round"/>
+                <circle cx="186" cy="128" r="10" fill="#f59e0b" stroke="#92400e" stroke-width="2.5"/>
+                <!-- Mata Comel -->
+                <circle cx="136" cy="108" r="5" fill="#ffffff"/>
+                <circle cx="137" cy="108" r="3" fill="#0f172a"/>
+            </svg>`,
+            beruang_kutub: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Badan Putih Gebu -->
+                <ellipse cx="110" cy="134" rx="50" ry="40" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+                <ellipse cx="110" cy="138" rx="30" ry="26" fill="#e0f2fe"/>
+                <!-- Telinga Bulat -->
+                <circle cx="72" cy="54" r="15" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+                <circle cx="72" cy="54" r="8" fill="#bae6fd"/>
+                <circle cx="148" cy="54" r="15" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+                <circle cx="148" cy="54" r="8" fill="#bae6fd"/>
+                <!-- Kepala -->
+                <circle cx="110" cy="84" r="44" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+                <!-- Muncung & Hidung -->
+                <ellipse cx="110" cy="96" rx="18" ry="14" fill="#f1f5f9"/>
+                <ellipse cx="110" cy="90" rx="8" ry="5.5" fill="#1e293b"/>
+                <path d="M 100 100 Q 110 108 120 100" fill="none" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                <!-- Mata -->
+                <circle cx="92" cy="76" r="6" fill="#1e293b"/>
+                <circle cx="94" cy="74" r="2" fill="#ffffff"/>
+                <circle cx="128" cy="76" r="6" fill="#1e293b"/>
+                <circle cx="130" cy="74" r="2" fill="#ffffff"/>
+                <!-- Skaf Leher Merah -->
+                <rect x="76" y="114" width="68" height="12" rx="6" fill="#ef4444"/>
+            </svg>`,
+            anjing_laut: `
+            <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md">
+                <!-- Ekor Sirip -->
+                <polygon points="48,142 18,125 25,148 15,165 52,156" fill="#64748b" stroke="#334155" stroke-width="2.5"/>
+                <!-- Badan Licin Anjing Laut -->
+                <path d="M 48 145 Q 85 158 145 148 Q 168 135 155 95 Q 148 52 118 52 Q 88 52 84 95 Q 78 128 48 145 Z"
+                      fill="#94a3b8" stroke="#334155" stroke-width="3"/>
+                <!-- Sirip Tepi -->
+                <ellipse cx="115" cy="138" rx="22" ry="10" fill="#64748b" transform="rotate(20 115 138)"/>
+                <!-- Mata & Misai -->
+                <circle cx="106" cy="76" r="6.5" fill="#0f172a"/>
+                <circle cx="108" cy="74" r="2" fill="#ffffff"/>
+                <circle cx="134" cy="76" r="6.5" fill="#0f172a"/>
+                <circle cx="136" cy="74" r="2" fill="#ffffff"/>
+                <ellipse cx="120" cy="88" rx="7" ry="4.5" fill="#1e293b"/>
+                <line x1="82" y1="88" x2="104" y2="90" stroke="#334155" stroke-width="2"/>
+                <line x1="82" y1="95" x2="104" y2="94" stroke="#334155" stroke-width="2"/>
+                <line x1="136" y1="90" x2="158" y2="88" stroke="#334155" stroke-width="2"/>
+                <line x1="136" y1="94" x2="158" y2="95" stroke="#334155" stroke-width="2"/>
+            </svg>`
+        };
+
+        /* =========================================================
+           DATA LENGKAP 4 HABITAT & 13 HAIWAN (3 SOALAN SETIAP HAIWAN)
+           ========================================================= */
+        const HABITATS_DATA = [
+            {
+                id: 'hutan',
+                name: 'HABITAT HUTAN',
+                badgeLabel: 'HABITAT: HUTAN',
+                emoji: '🌳',
+                themeClass: 'bg-forest-theme',
+                borderColor: 'border-emerald-600',
+                titleColor: 'text-emerald-700',
+                description: 'Lihat sekeliling! Ini ialah HUTAN. Hutan ada banyak pokok besar, daun hijau dan udara yang segar. Mari kita berkenalan dengan empat haiwan yang tinggal di hutan!',
+                illustrationSvg: `
+                <svg viewBox="0 0 400 170" class="w-full h-36 sm:h-40">
+                    <ellipse cx="100" cy="165" rx="140" ry="55" fill="#4ade80"/>
+                    <ellipse cx="310" cy="165" rx="150" ry="60" fill="#22c55e"/>
+                    <rect x="65" y="88" width="22" height="65" rx="5" fill="#78350f"/>
+                    <circle cx="76" cy="74" r="34" fill="#15803d"/>
+                    <circle cx="55" cy="86" r="24" fill="#16a34a"/>
+                    <circle cx="98" cy="86" r="24" fill="#16a34a"/>
+                    <rect x="295" y="80" width="26" height="72" rx="5" fill="#78350f"/>
+                    <circle cx="308" cy="65" r="38" fill="#15803d"/>
+                    <circle cx="282" cy="80" r="26" fill="#22c55e"/>
+                    <circle cx="332" cy="80" r="26" fill="#22c55e"/>
+                    <path d="M 160 170 Q 190 132 220 170 Z" fill="#38bdf8"/>
+                </svg>`,
+                animals: [
+                    {
+                        id: 'burung',
+                        name: 'Burung',
+                        introSpeech: 'Comelnya Burung ini! Burung ada kepak untuk terbang tinggi dan paruh untuk makan. Jom dengar dan jawab tiga soalan tentang burung!',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan ini?', keywords: ['burung'] },
+                            { type: 'mudah', text: 'Apakah yang digunakan oleh burung untuk terbang?', keywords: ['kepak', 'sayap'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan apa yang adik tahu tentang burung.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'monyet',
+                        name: 'Monyet',
+                        introSpeech: 'Ini pula Monyet! Monyet suka bergayut di atas dahan pokok dan sangat suka makan buah pisang yang manis.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan yang suka bergayut ini?', keywords: ['monyet'] },
+                            { type: 'mudah', text: 'Apakah buah kegemaran monyet?', keywords: ['pisang', 'buah'] },
+                            { type: 'terbuka', text: 'Bagaimanakah monyet bergerak di atas pokok? Cuba ceritakan.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'gajah',
+                        name: 'Gajah',
+                        introSpeech: 'Wah, besarnya Gajah! Gajah ialah haiwan darat yang sangat besar, mempunyai telinga lebar dan belalai yang panjang.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan yang besar ini?', keywords: ['gajah'] },
+                            { type: 'mudah', text: 'Apakah nama hidung gajah yang panjang itu?', keywords: ['belalai', 'hidung'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan bagaimana rupa gajah yang adik nampak.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'harimau',
+                        name: 'Harimau',
+                        introSpeech: 'Lihat itu! Itu ialah Harimau. Harimau mempunyai badan berwarna jingga dengan belang hitam dan bunyi ngauman yang kuat.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan yang berbelang ini?', keywords: ['harimau', 'rimau'] },
+                            { type: 'mudah', text: 'Apakah warna belang pada badan harimau?', keywords: ['hitam', 'jingga', 'oren'] },
+                            { type: 'terbuka', text: 'Bolehkah adik ajuk bunyi harimau atau ceritakan tentangnya?', keywords: [] }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'laut',
+                name: 'HABITAT LAUT',
+                badgeLabel: 'HABITAT: LAUT',
+                emoji: '🌊',
+                themeClass: 'bg-sea-theme',
+                borderColor: 'border-sky-600',
+                titleColor: 'text-sky-700',
+                description: 'Sekarang kita menyelam ke dalam LAUT yang biru! Di dalam laut ada air masin, batu karang yang cantik dan empat haiwan laut yang menarik!',
+                illustrationSvg: `
+                <svg viewBox="0 0 400 170" class="w-full h-36 sm:h-40 bg-sky-300 rounded-xl">
+                    <path d="M0,45 Q50,25 100,45 T200,45 T300,45 T400,45 L400,170 L0,170 Z" fill="#0284c7"/>
+                    <rect x="0" y="142" width="400" height="28" fill="#fde047"/>
+                    <path d="M55,142 Q45,110 60,85 Q70,115 55,142" fill="#16a34a"/>
+                    <path d="M330,142 Q320,105 338,80 Q348,112 330,142" fill="#22c55e"/>
+                    <circle cx="140" cy="80" r="8" fill="#bae6fd" opacity="0.7"/>
+                    <circle cx="250" cy="95" r="6" fill="#bae6fd" opacity="0.7"/>
+                </svg>`,
+                animals: [
+                    {
+                        id: 'sotong',
+                        name: 'Sotong',
+                        introSpeech: 'Ini ialah Sotong! Sotong tinggal di dalam laut dan mempunyai lapan sesungut yang lembut untuk berenang.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan laut berwarna ungu ini?', keywords: ['sotong'] },
+                            { type: 'mudah', text: 'Di manakah sotong tinggal?', keywords: ['laut', 'air'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan tentang sesungut atau badan sotong ini.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'ikan',
+                        name: 'Ikan',
+                        introSpeech: 'Comelnya Ikan ini! Ikan mempunyai sirip dan ekor untuk berenang dengan laju di dalam air.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan yang berenang di dalam air ini?', keywords: ['ikan'] },
+                            { type: 'mudah', text: 'Apakah yang digunakan oleh ikan untuk berenang?', keywords: ['sirip', 'ekor'] },
+                            { type: 'terbuka', text: 'Apakah warna ikan yang pernah adik lihat? Cuba ceritakan.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'ketam',
+                        name: 'Ketam',
+                        introSpeech: 'Lihat itu, Ketam! Ketam mempunyai cengkerang keras, dua penyepit besar di hadapan dan suka berjalan mengiring.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan laut berwarna merah ini?', keywords: ['ketam'] },
+                            { type: 'mudah', text: 'Apakah yang ada di hadapan badan ketam?', keywords: ['penyepit', 'sepit', 'tangan'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan bagaimana cara ketam berjalan di pantai.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'tapak_sulaiman',
+                        name: 'Tapak Sulaiman',
+                        introSpeech: 'Cantiknya Tapak Sulaiman! Bentuk badannya menyerupai bintang yang bersinar di dasar laut.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan laut ini?', keywords: ['tapak sulaiman', 'sulaiman', 'bintang'] },
+                            { type: 'mudah', text: 'Apakah bentuk badan tapak sulaiman?', keywords: ['bintang'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan apa yang adik nampak pada tapak sulaiman ini.', keywords: [] }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'gurun',
+                name: 'HABITAT GURUN PANAS',
+                badgeLabel: 'HABITAT: GURUN PANAS',
+                emoji: '🏜️',
+                themeClass: 'bg-desert-theme',
+                borderColor: 'border-amber-600',
+                titleColor: 'text-amber-700',
+                description: 'Wah, hangatnya di GURUN PANAS! Gurun penuh dengan pasir keemasan, pokok kaktus dan matahari yang terik. Jom kenali tiga haiwan gurun!',
+                illustrationSvg: `
+                <svg viewBox="0 0 400 170" class="w-full h-36 sm:h-40 bg-amber-100 rounded-xl">
+                    <circle cx="330" cy="40" r="24" fill="#facc15"/>
+                    <ellipse cx="110" cy="165" rx="160" ry="65" fill="#fbbf24"/>
+                    <ellipse cx="300" cy="165" rx="160" ry="60" fill="#f59e0b"/>
+                    <rect x="85" y="75" width="16" height="65" rx="8" fill="#16a34a"/>
+                    <path d="M85,105 L72,105 L72,88" fill="none" stroke="#16a34a" stroke-width="10" stroke-linecap="round"/>
+                    <path d="M101,98 L114,98 L114,82" fill="none" stroke="#16a34a" stroke-width="10" stroke-linecap="round"/>
+                </svg>`,
+                animals: [
+                    {
+                        id: 'unta',
+                        name: 'Unta',
+                        introSpeech: 'Ini ialah Unta! Unta sangat kuat berjalan di atas pasir gurun dan mempunyai bonggol di atas belakangnya.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan yang tinggal di gurun ini?', keywords: ['unta'] },
+                            { type: 'mudah', text: 'Apakah yang ada di atas belakang badan unta?', keywords: ['bonggol', 'bukit'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan apa yang adik tahu tentang unta di gurun.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'ular',
+                        name: 'Ular',
+                        introSpeech: 'Lihat itu, Ular! Ular tidak mempunyai kaki. Ular bergerak dengan cara menjalar di atas pasir.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan yang panjang ini?', keywords: ['ular'] },
+                            { type: 'mudah', text: 'Bagaimanakah cara ular bergerak?', keywords: ['menjalar', 'jalar', 'rayap'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan bagaimana rupa atau bunyi ular.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'kalajengking',
+                        name: 'Kalajengking',
+                        introSpeech: 'Ini pula Kalajengking! Kalajengking tinggal di bawah batu di gurun dan mempunyai ekor yang melengkung ke atas.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan gurun ini?', keywords: ['kalajengking', 'jengking'] },
+                            { type: 'mudah', text: 'Di manakah kalajengking ini tinggal?', keywords: ['gurun', 'pasir', 'batu'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan tentang ekor atau penyepit kalajengking ini.', keywords: [] }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'kutub',
+                name: 'HABITAT KUTUB UTARA',
+                badgeLabel: 'HABITAT: KUTUB UTARA',
+                emoji: '❄️',
+                themeClass: 'bg-arctic-theme',
+                borderColor: 'border-cyan-600',
+                titleColor: 'text-cyan-700',
+                description: 'Brrr, sejuknya di KUTUB UTARA! Tempat ini dilitupi salji putih dan ais yang tebal. Mari kita berkenalan dengan dua haiwan yang tahan sejuk!',
+                illustrationSvg: `
+                <svg viewBox="0 0 400 170" class="w-full h-36 sm:h-40 bg-sky-200 rounded-xl">
+                    <polygon points="40,145 105,55 170,145" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="3"/>
+                    <polygon points="230,145 295,65 360,145" fill="#ffffff" stroke="#7dd3fc" stroke-width="3"/>
+                    <rect x="0" y="135" width="400" height="35" fill="#ffffff"/>
+                    <text x="60" y="45" font-size="22" fill="#ffffff">❄️</text>
+                    <text x="210" y="38" font-size="20" fill="#ffffff">❄️</text>
+                </svg>`,
+                animals: [
+                    {
+                        id: 'beruang_kutub',
+                        name: 'Beruang Kutub',
+                        introSpeech: 'Comelnya Beruang Kutub! Beruang kutub mempunyai bulu putih yang tebal supaya badannya sentiasa panas di atas salji.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama beruang yang berwarna putih ini?', keywords: ['beruang', 'kutub'] },
+                            { type: 'mudah', text: 'Apakah warna bulu beruang kutub?', keywords: ['putih'] },
+                            { type: 'terbuka', text: 'Mengapakah beruang kutub perlukan bulu tebal? Cuba ceritakan.', keywords: [] }
+                        ]
+                    },
+                    {
+                        id: 'anjing_laut',
+                        name: 'Anjing Laut',
+                        introSpeech: 'Dan yang terakhir ialah Anjing Laut! Anjing laut pandai berenang di dalam air sejuk dan mempunyai misai yang comel.',
+                        questions: [
+                            { type: 'mudah', text: 'Apakah nama haiwan kutub yang comel ini?', keywords: ['anjing laut', 'anjing'] },
+                            { type: 'mudah', text: 'Di manakah anjing laut tinggal?', keywords: ['kutub', 'salji', 'ais', 'laut'] },
+                            { type: 'terbuka', text: 'Cuba ceritakan apa yang adik suka tentang anjing laut ini.', keywords: [] }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Senarai rata semua 13 haiwan untuk kemajuan keseluruhan
+        const FLAT_ANIMALS = [];
+        HABITATS_DATA.forEach((hab, hIdx) => {
+            hab.animals.forEach((ani, aIdx) => {
+                FLAT_ANIMALS.push({
+                    habitatIndex: hIdx,
+                    animalIndexInHabitat: aIdx,
+                    globalIndex: FLAT_ANIMALS.length,
+                    habitat: hab,
+                    animal: ani
+                });
+            });
+        });
+
+        /* =========================================================
+           KEADAAN (STATE) PERMAINAN & AUDIO / PERTUTURAN
+           ========================================================= */
+        let currentGlobalAnimalIdx = 0;
+        let currentQuestionIndex = 0;
+        let starsEarned = 0;
+        let questionAnswered = false;
+        let soundEnabled = true;
+        let synth = null;
+
+        // Pemboleh ubah Audio (Web Speech Synthesis + Sokongan Rakaman Audio Masa Hadapan)
+        let currentSpeechText = "";
+        let currentAudioKey = "";
+        // Ruang khas untuk fail audio rakaman suara sebenar Cik Sara pada masa hadapan
+        // Contoh penggunaan: CIK_SARA_RECORDED_AUDIO['welcome'] = 'audio/cik_sara_welcome.mp3';
+        const CIK_SARA_RECORDED_AUDIO = {};
+        let activeRecordedAudio = null;
+
+        // Pemboleh ubah Mikrofon (Web Speech Recognition)
+        let recognition = null;
+        let isListening = false;
+        let speechSupported = false;
+
+        /* =========================================================
+           SISTEM AUDIO SUARA CIK SARA (TEXT-TO-SPEECH ms-MY)
+           ========================================================= */
+        function speakCikSara(text, audioKey = '') {
+            currentSpeechText = text;
+            currentAudioKey = audioKey;
+
+            // Hentikan audio sebelumnya
+            stopCikSaraVoice();
+
+            if (!soundEnabled) return;
+
+            // 1. Semak jika ada rakaman suara sebenar Cik Sara dimasukkan
+            if (audioKey && CIK_SARA_RECORDED_AUDIO[audioKey]) {
+                try {
+                    activeRecordedAudio = new Audio(CIK_SARA_RECORDED_AUDIO[audioKey]);
+                    activeRecordedAudio.play().catch(() => {});
+                    return;
+                } catch (e) {
+                    // Teruskan ke Web Speech Synthesis jika gagal
+                }
+            }
+
+            // 2. Gunakan Web Speech Synthesis Bahasa Melayu Malaysia (ms-MY)
+            if ('speechSynthesis' in window) {
+                try {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'ms-MY';
+                    utterance.rate = 0.92; // Kadar pertuturan sedikit perlahan & jelas untuk kanak-kanak 4-5 tahun
+                    utterance.pitch = 1.15; // Nada mesra & ceria
+
+                    const voices = window.speechSynthesis.getVoices();
+                    const msVoice = voices.find(v => v.lang.toLowerCase().includes('ms')) ||
+                                    voices.find(v => v.lang.toLowerCase().includes('id'));
+                    if (msVoice) {
+                        utterance.voice = msVoice;
+                    }
+
+                    window.speechSynthesis.speak(utterance);
+                } catch (e) {
+                    // Abaikan ralat jika pelayar menyekat
+                }
+            }
+        }
+
+        function stopCikSaraVoice() {
+            if (activeRecordedAudio) {
+                activeRecordedAudio.pause();
+                activeRecordedAudio.currentTime = 0;
+                activeRecordedAudio = null;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function replayCurrentSpeech() {
+            playSound('click');
+            if (currentSpeechText) {
+                speakCikSara(currentSpeechText, currentAudioKey);
+            }
+        }
+
+        /* =========================================================
+           SISTEM PENGECAMAN SUARA MIKROFON (SPEECH RECOGNITION)
+           ========================================================= */
+        function initSpeechRecognition() {
+            const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognitionAPI) {
+                speechSupported = false;
+                return;
+            }
+
+            speechSupported = true;
+            recognition = new SpeechRecognitionAPI();
+            recognition.lang = 'ms-MY';
+            recognition.interimResults = true;
+            recognition.continuous = false;
+            recognition.maxAlternatives = 3;
+
+            recognition.onstart = () => {
+                isListening = true;
+                updateMicUIState('listening');
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    const transcriptPiece = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcriptPiece;
+                    } else {
+                        interimTranscript += transcriptPiece;
+                    }
+                }
+
+                const transcriptEl = document.getElementById('spoken-transcript');
+                if (finalTranscript) {
+                    transcriptEl.textContent = `"${finalTranscript.trim()}"`;
+                    transcriptEl.classList.remove('text-gray-400');
+                    transcriptEl.classList.add('text-emerald-700');
+                    evaluateSpokenAnswer(finalTranscript.trim());
+                } else if (interimTranscript) {
+                    transcriptEl.textContent = `"${interimTranscript.trim()}..."`;
+                    transcriptEl.classList.remove('text-gray-400');
+                    transcriptEl.classList.add('text-sky-700');
+                }
+            };
+
+            recognition.onerror = (event) => {
+                isListening = false;
+                updateMicUIState('idle');
+
+                const assistBox = document.getElementById('teacher-assist-box');
+                const errorMsg = document.getElementById('mic-error-msg');
+                assistBox.classList.remove('hidden');
+
+                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                    errorMsg.textContent = 'Kebenaran mikrofon tidak diberikan. Sila benarkan mikrofon pada pelayar atau gunakan butang bantuan guru di bawah:';
+                } else if (event.error === 'no-speech') {
+                    errorMsg.textContent = 'Suara adik tidak kedengaran. Tekan CUBA LAGI untuk bercakap semula, atau gunakan bantuan guru di bawah:';
+                } else {
+                    errorMsg.textContent = 'Mikrofon menghadapi gangguan seketika. Adik boleh tekan CUBA LAGI atau minta bantuan guru di bawah:';
+                }
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                updateMicUIState('idle');
+            };
+        }
+
+        function updateMicUIState(state) {
+            const btnStart = document.getElementById('btn-start-mic');
+            const btnStop = document.getElementById('btn-stop-mic');
+            const btnRetry = document.getElementById('btn-retry-mic');
+            const indicator = document.getElementById('listening-indicator');
+
+            if (state === 'listening') {
+                btnStart.classList.add('hidden');
+                btnStop.classList.remove('hidden');
+                btnRetry.classList.add('hidden');
+                indicator.classList.remove('hidden');
+                indicator.classList.add('flex');
+            } else {
+                btnStart.classList.remove('hidden');
+                btnStop.classList.add('hidden');
+                btnRetry.classList.remove('hidden');
+                indicator.classList.add('hidden');
+                indicator.classList.remove('flex');
+            }
+        }
+
+        function startSpeechRecognition() {
+            stopCikSaraVoice();
+            playSound('click');
+
+            if (!speechSupported || !recognition) {
+                document.getElementById('teacher-assist-box').classList.remove('hidden');
+                document.getElementById('mic-error-msg').textContent =
+                    'Pelayar ini tidak menyokong pengecaman suara secara automatik. Cikgu atau ibu bapa boleh klik butang bantuan di bawah selepas kanak-kanak menjawab:';
+                return;
+            }
+
+            try {
+                document.getElementById('spoken-transcript').textContent = 'Mendengar...';
+                document.getElementById('spoken-transcript').className = 'font-cartoon text-xl sm:text-2xl font-bold text-sky-600 min-h-[2rem]';
+                recognition.start();
+            } catch (e) {
+                // Jika sudah bermula, abaikan
+            }
+        }
+
+        function stopSpeechRecognition() {
+            playSound('click');
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+            updateMicUIState('idle');
+        }
+
+        function retrySpeechRecognition() {
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('spoken-transcript').textContent = '(Belum ada suara dikesan)';
+            document.getElementById('spoken-transcript').className = 'font-cartoon text-xl sm:text-2xl font-bold text-gray-400 min-h-[2rem]';
+            startSpeechRecognition();
+        }
+
+        // Penilaian jawapan pertuturan kanak-kanak (Soalan Mudah & Soalan Terbuka)
+        function evaluateSpokenAnswer(spokenText) {
+            const entry = FLAT_ANIMALS[currentGlobalAnimalIdx];
+            const qData = entry.animal.questions[currentQuestionIndex];
+            const cleanText = spokenText.toLowerCase().trim();
+
+            if (!cleanText) return;
+
+            let isAccepted = false;
+
+            if (qData.type === 'terbuka') {
+                // Soalan terbuka: Terima sebarang usaha kanak-kanak bertutur (sekurang-kurangnya 2 huruf)
+                isAccepted = cleanText.length >= 2;
+            } else {
+                // Soalan mudah: Semak kata kunci atau terima jika kanak-kanak menyebut jawapan berkaitan
+                isAccepted = qData.keywords.some(kw => cleanText.includes(kw.toLowerCase()));
+            }
+
+            showSpokenFeedback(isAccepted, qData);
+        }
+
+        // Bantuan guru / ibu bapa apabila mikrofon tidak disokong
+        function teacherConfirmSpoken(isGood) {
+            const entry = FLAT_ANIMALS[currentGlobalAnimalIdx];
+            const qData = entry.animal.questions[currentQuestionIndex];
+            const transcriptEl = document.getElementById('spoken-transcript');
+
+            if (isGood) {
+                transcriptEl.textContent = '(Dijawab secara lisan dengan bimbingan guru)';
+                transcriptEl.className = 'font-cartoon text-lg sm:text-xl font-bold text-emerald-700 min-h-[2rem]';
+                showSpokenFeedback(true, qData);
+            } else {
+                showSpokenFeedback(false, qData);
+            }
+        }
+
+        function showSpokenFeedback(isPositive, qData) {
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackEmoji = document.getElementById('feedback-emoji');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackMessage = document.getElementById('feedback-message');
+            const nextBtn = document.getElementById('next-question-btn');
+            const nextBtnLabel = document.getElementById('next-btn-label');
+
+            feedbackBox.classList.remove('hidden');
+
+            const positivePraises = [
+                'Wah, bagusnya!',
+                'Pandainya adik!',
+                'Terima kasih kerana mencuba!',
+                'Hebat sekali adik bertutur!'
+            ];
+
+            if (isPositive) {
+                playSound('correct');
+                const chosenPraise = positivePraises[(currentGlobalAnimalIdx + currentQuestionIndex) % positivePraises.length];
+
+                if (!questionAnswered) {
+                    questionAnswered = true;
+                    starsEarned++;
+                    updateStarBoard();
+                }
+
+                feedbackBox.className = 'mt-4 rounded-2xl p-4 md:p-5 text-center border-4 bg-emerald-100 border-emerald-500 text-emerald-950 animate-pop';
+                feedbackEmoji.textContent = '🌟👏🎉';
+                feedbackTitle.textContent = chosenPraise;
+
+                const speechReply = qData.type === 'terbuka'
+                    ? `${chosenPraise} Seronoknya Cik Sara dengar cerita adik tentang ${FLAT_ANIMALS[currentGlobalAnimalIdx].animal.name}!`
+                    : `${chosenPraise} Jawapan adik sangat bagus. Adik dapat satu bintang!`;
+
+                feedbackMessage.textContent = speechReply;
+                speakCikSara(speechReply, 'praise_positive');
+
+                nextBtn.classList.remove('hidden');
+                if (currentQuestionIndex < 2) {
+                    nextBtnLabel.textContent = 'SOALAN SETERUSNYA';
+                } else if (currentGlobalAnimalIdx < FLAT_ANIMALS.length - 1) {
+                    const nextEntry = FLAT_ANIMALS[currentGlobalAnimalIdx + 1];
+                    if (nextEntry.habitatIndex !== FLAT_ANIMALS[currentGlobalAnimalIdx].habitatIndex) {
+                        nextBtnLabel.textContent = `KE ${nextEntry.habitat.name}`;
+                    } else {
+                        nextBtnLabel.textContent = `HAIWAN SETERUSNYA: ${nextEntry.animal.name.toUpperCase()}`;
+                    }
+                } else {
+                    nextBtnLabel.textContent = 'TAMAT & LIHAT BINTANG';
+                }
+
+                triggerConfetti(20);
+            } else {
+                playSound('tryAgain');
+                feedbackBox.className = 'mt-4 rounded-2xl p-4 md:p-5 text-center border-4 bg-amber-100 border-amber-400 text-amber-950 animate-pop';
+                feedbackEmoji.textContent = '🤗💬';
+                feedbackTitle.textContent = 'Mari kita cuba sekali lagi!';
+                const retryReply = 'Mari kita cuba sekali lagi! Tekan butang Cuba Lagi dan sebut jawapan adik dengan jelas ya.';
+                feedbackMessage.textContent = retryReply;
+                speakCikSara(retryReply, 'praise_retry');
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        function updateStarBoard() {
+            const totalQuestions = FLAT_ANIMALS.length * 3;
+            document.getElementById('star-count-text').textContent = `${starsEarned} / ${totalQuestions}`;
+        }
+
+        /* =========================================================
+           SISTEM BUNYI MESRA KANAK-KANAK (TONE.JS)
+           ========================================================= */
+        function initAudio() {
+            if (!synth && typeof Tone !== 'undefined') {
+                synth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "triangle" },
+                    envelope: { attack: 0.02, decay: 0.15, sustain: 0.2, release: 0.4 }
+                }).toDestination();
+                synth.volume.value = -6;
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+                const now = Tone.now();
+                if (type === 'click') {
+                    synth.triggerAttackRelease("C5", "16n", now);
+                } else if (type === 'correct') {
+                    synth.triggerAttackRelease("C5", "16n", now);
+                    synth.triggerAttackRelease("E5", "16n", now + 0.1);
+                    synth.triggerAttackRelease("G5", "8n", now + 0.2);
+                } else if (type === 'tryAgain') {
+                    synth.triggerAttackRelease("E4", "16n", now);
+                    synth.triggerAttackRelease("C4", "8n", now + 0.12);
+                } else if (type === 'fanfare') {
+                    synth.triggerAttackRelease("C5", "16n", now);
+                    synth.triggerAttackRelease("E5", "16n", now + 0.1);
+                    synth.triggerAttackRelease("G5", "16n", now + 0.2);
+                    synth.triggerAttackRelease("C6", "4n", now + 0.3);
+                }
+            } catch (e) {
+                // Abaikan ralat audio jika pelayar menyekat auto-play
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-on-icon').classList.toggle('hidden', !soundEnabled);
+            document.getElementById('sound-off-icon').classList.toggle('hidden', soundEnabled);
+            if (!soundEnabled) {
+                stopCikSaraVoice();
+            } else {
+                playSound('click');
+            }
+        }
+
+        /* =========================================================
+           FUNGSI NAVIGASI SKRIN & ALIRAN 4 HABITAT / 13 HAIWAN
+           ========================================================= */
+        const ALL_SCREENS = [
+            'screen-home',
+            'screen-welcome',
+            'screen-forest',
+            'screen-bird-intro',
+            'screen-quiz',
+            'screen-celebration'
+        ];
+
+        function showScreen(screenId) {
+            ALL_SCREENS.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                    // Reset animasi pop
+                    el.classList.remove('animate-pop');
+                    void el.offsetWidth;
+                    el.classList.add('animate-pop');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+
+            // Kawal paparan bar atas (Butang Utama & Papan Bintang)
+            const isHome = (screenId === 'screen-home');
+            document.getElementById('home-btn').classList.toggle('hidden', isHome);
+            document.getElementById('star-board').classList.toggle('hidden', isHome);
+        }
+
+        // 1. Apabila butang MULA ditekan -> Cik Sara menyambut kanak-kanak
+        function startGame() {
+            playSound('correct');
+            currentGlobalAnimalIdx = 0;
+            currentQuestionIndex = 0;
+            starsEarned = 0;
+            updateStarBoard();
+            showScreen('screen-welcome');
+
+            const welcomeMsg = document.getElementById('welcome-speech-text').textContent.trim();
+            speakCikSara('Hai adik-adik! Selamat datang ke Bicara Zoo! ' + welcomeMsg, 'welcome');
+        }
+
+        // 2. Perkenalkan Habitat Semasa (Hutan, Laut, Gurun Panas, Kutub Utara)
+        function goToCurrentHabitat() {
+            playSound('click');
+            const entry = FLAT_ANIMALS[currentGlobalAnimalIdx];
+            const hab = entry.habitat;
+
+            // Tukar tema latar belakang mengikut habitat
+            const body = document.getElementById('app-body');
+            body.classList.remove('bg-forest-theme', 'bg-sea-theme', 'bg-desert-theme', 'bg-arctic-theme');
+            body.classList.add(hab.themeClass);
+
+            document.getElementById('forest-decor').classList.toggle('hidden', hab.id !== 'hutan');
+
+            // Kemas kini lencana lokasi atas
+            const locBadge = document.getElementById('location-badge');
+            locBadge.classList.remove('hidden');
+            document.getElementById('location-emoji').textContent = hab.emoji;
+            document.getElementById('location-text').textContent = hab.badgeLabel;
+
+            // Kemas kini kad pengenalan habitat
+            const card = document.getElementById('habitat-card');
+            card.className = `bg-white/95 border-8 ${hab.borderColor} rounded-3xl p-5 md:p-8 max-w-2xl w-full shadow-2xl`;
+
+            document.getElementById('habitat-step-badge').textContent = `${hab.emoji} HABITAT ${entry.habitatIndex + 1} DARIPADA ${HABITATS_DATA.length}`;
+            const titleEl = document.getElementById('habitat-title');
+            titleEl.textContent = hab.name;
+            titleEl.className = `font-cartoon text-3xl sm:text-5xl font-bold ${hab.titleColor} mb-4`;
+
+            document.getElementById('habitat-illustration').innerHTML = hab.illustrationSvg;
+            document.getElementById('habitat-description').textContent = `"${hab.description}"`;
+            document.getElementById('habitat-next-btn-text').textContent = `LIHAT HAIWAN DI ${hab.name.replace('HABITAT ', '')}`;
+
+            showScreen('screen-forest');
+            speakCikSara(hab.description, `habitat_${hab.id}`);
+        }
+
+        // 3. Paparkan gambar haiwan & Cik Sara memperkenalkan haiwan tersebut
+        function goToCurrentAnimalIntro() {
+            playSound('click');
+            const entry = FLAT_ANIMALS[currentGlobalAnimalIdx];
+            const ani = entry.animal;
+
+            document.getElementById('animal-progress-badge').textContent =
+                `HAIWAN ${entry.globalIndex + 1} DARIPADA ${FLAT_ANIMALS.length} • ${entry.habitat.name}`;
+            document.getElementById('animal-intro-title').textContent = `INI IALAH ${ani.name.toUpperCase()}!`;
+            document.getElementById('bird-illustration-intro').innerHTML = ANIMAL_SVGS[ani.id];
+            document.getElementById('animal-intro-speech').textContent = `"${ani.introSpeech}"`;
+
+            showScreen('screen-bird-intro');
+            speakCikSara(`Ini ialah ${ani.name}! ${ani.introSpeech}`, `intro_${ani.id}`);
+        }
+
+        // 4. Mulakan 3 soalan interaktif bagi haiwan semasa
+        function startQuiz() {
+            playSound('click');
+            currentQuestionIndex = 0;
+            loadQuestion(currentQuestionIndex);
+            showScreen('screen-quiz');
+        }
+
+        // Muatkan soalan semasa ke dalam paparan
+        function loadQuestion(index) {
+            questionAnswered = false;
+            const entry = FLAT_ANIMALS[currentGlobalAnimalIdx];
+            const ani = entry.animal;
+            const qData = ani.questions[index];
+
+            // Hentikan mikrofon jika masih aktif
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+            updateMicUIState('idle');
+
+            // Kemas kini maklumat soalan & gambar haiwan
+            document.getElementById('question-counter').textContent = `SOALAN ${index + 1} DARIPADA 3`;
+            document.getElementById('quiz-animal-label').textContent = `Haiwan ${entry.globalIndex + 1}/${FLAT_ANIMALS.length}: ${ani.name}`;
+            document.getElementById('bird-illustration-quiz').innerHTML = ANIMAL_SVGS[ani.id];
+            document.getElementById('question-text').textContent = qData.text;
+
+            const typeBadge = document.getElementById('question-type-badge');
+            if (qData.type === 'terbuka') {
+                typeBadge.textContent = '🗣️ Soalan Terbuka (Bercerita)';
+                typeBadge.className = 'bg-pink-100 text-pink-800 font-cartoon font-bold px-3 py-1 rounded-full text-xs sm:text-sm';
+            } else {
+                typeBadge.textContent = '💬 Soalan Mudah';
+                typeBadge.className = 'bg-sky-100 text-sky-800 font-cartoon font-bold px-3 py-1 rounded-full text-xs sm:text-sm';
+            }
+
+            // Reset paparan transkrip & kotak maklum balas
+            const transcriptEl = document.getElementById('spoken-transcript');
+            transcriptEl.textContent = '(Belum ada suara dikesan)';
+            transcriptEl.className = 'font-cartoon text-xl sm:text-2xl font-bold text-gray-400 min-h-[2rem]';
+
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('next-question-btn').classList.add('hidden');
+
+            // Tunjukkan bantuan guru terus jika pelayar tidak menyokong SpeechRecognition
+            document.getElementById('teacher-assist-box').classList.toggle('hidden', speechSupported);
+
+            // Sebutkan soalan melalui suara Cik Sara
+            speakCikSara(qData.text, `q_${ani.id}_${index + 1}`);
+        }
+
+        // Pergi ke soalan seterusnya, haiwan seterusnya, habitat seterusnya, atau tamat
+        function handleNextStep() {
+            playSound('click');
+            stopCikSaraVoice();
+
+            if (currentQuestionIndex < 2) {
+                // Soalan seterusnya untuk haiwan yang sama
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            } else if (currentGlobalAnimalIdx < FLAT_ANIMALS.length - 1) {
+                const prevHabitatIdx = FLAT_ANIMALS[currentGlobalAnimalIdx].habitatIndex;
+                currentGlobalAnimalIdx++;
+                const nextHabitatIdx = FLAT_ANIMALS[currentGlobalAnimalIdx].habitatIndex;
+
+                if (nextHabitatIdx !== prevHabitatIdx) {
+                    // Habitat seterusnya
+                    goToCurrentHabitat();
+                } else {
+                    // Haiwan seterusnya dalam habitat yang sama
+                    goToCurrentAnimalIntro();
+                }
+            } else {
+                // Tamat semua 13 haiwan & 4 habitat
+                playSound('fanfare');
+                const summaryMsg = `Tahniah adik pintar! Adik telah melawat semua empat habitat, mengenali kesemua tiga belas haiwan dan mengumpul ${starsEarned} bintang ganjaran!`;
+                document.getElementById('celebration-summary-text').textContent = summaryMsg;
+                showScreen('screen-celebration');
+                speakCikSara(summaryMsg, 'celebration');
+                triggerConfetti(60);
+            }
+        }
+
+        // Set semula permainan ke skrin utama
+        function resetToHome() {
+            playSound('click');
+            stopCikSaraVoice();
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+
+            currentGlobalAnimalIdx = 0;
+            currentQuestionIndex = 0;
+            starsEarned = 0;
+            questionAnswered = false;
+            updateStarBoard();
+
+            // Reset tema latar belakang
+            document.getElementById('app-body').classList.remove('bg-forest-theme', 'bg-sea-theme', 'bg-desert-theme', 'bg-arctic-theme');
+            document.getElementById('forest-decor').classList.add('hidden');
+            document.getElementById('location-badge').classList.add('hidden');
+
+            showScreen('screen-home');
+        }
+
+        // Kesan konfeti warna-warni untuk sambutan
+        function triggerConfetti(amount) {
+            const colors = ['#facc15', '#4ade80', '#38bdf8', '#f472b6', '#fb923c'];
+            for (let i = 0; i < amount; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = '-15px';
+                conf.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(conf);
+
+                const duration = 1200 + Math.random() * 1500;
+                const xDrift = (Math.random() - 0.5) * 160;
+
+                conf.animate([
+                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${xDrift}px, 100vh) rotate(720deg)`, opacity: 0 }
+                ], {
+                    duration: duration,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                }).onfinish = () => conf.remove();
+            }
+        }
+
+        /* =========================================================
+           INISIALISASI WATAK & ILUSTRASI SEMASA HALAMAN DIMUATKAN
+           ========================================================= */
+        window.addEventListener('DOMContentLoaded', () => {
+            // Inisialisasi pengecaman suara mikrofon
+            initSpeechRecognition();
+            updateStarBoard();
+
+            // Muatkan senarai suara pelayar awal untuk Speech Synthesis
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+                window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+            }
+
+            // Masukkan SVG Cik Sara ke semua tempat berkaitan
+            document.getElementById('cik-sara-home-container').innerHTML = CIK_SARA_SVG;
+            document.getElementById('cik-sara-welcome-container').innerHTML = CIK_SARA_SVG;
+            document.getElementById('cik-sara-mini-forest').innerHTML = CIK_SARA_SVG;
+            document.getElementById('cik-sara-mini-bird').innerHTML = CIK_SARA_SVG;
+            document.getElementById('cik-sara-mini-quiz').innerHTML = CIK_SARA_SVG;
+            document.getElementById('cik-sara-celebrate').innerHTML = CIK_SARA_SVG;
+
+            // Masukkan SVG Burung awal
+            document.getElementById('bird-illustration-intro').innerHTML = ANIMAL_SVGS.burung;
+            document.getElementById('bird-illustration-quiz').innerHTML = ANIMAL_SVGS.burung;
+        });
+    </script>
+</body>
+</html>
